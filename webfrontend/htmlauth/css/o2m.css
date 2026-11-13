@@ -1,0 +1,97 @@
+/* ochsner2mqtt – Ergänzungen zum LoxBerry Design System (components.css).
+   Grundbausteine kommen aus dem Design System: lb-card, lb-form-row/-label/-field/-help,
+   lb-input, lb-select, lb-toggle, lb-table, lb-callout, lb-btn(-icon) mit PrimeIcons.
+   Hier nur, was das Design System nicht hat (Kennzahl-Kacheln, Status-Callouts, Log-Ansicht).
+   Farben ausschließlich über die Tokens (--lb-*), damit jedes Theme (Classic, Soft, Glass) passt. */
+
+.o2m { max-width: 1180px; margin: 0 auto; color: var(--lb-text, #171717); line-height: 1.45; }
+.o2m [hidden] { display: none !important; }
+.o2m-card { margin: 0 0 var(--lb-space-lg, 16px); }
+.o2m-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; margin-bottom: 14px; }
+.o2m-head h2 { font-size: 1.08rem; font-weight: 700; margin: 0; line-height: 1.3; }
+.o2m-head p { margin: 4px 0 0; color: var(--lb-text-muted, #737373); font-size: .87rem; max-width: 80ch; }
+.o2m-head .side { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.o2m-normal { font-weight: 400; }
+.o2m-muted { color: var(--lb-text-muted, #6e7781); }
+.o2m-ok { color: var(--lb-success, #1a7f37); }
+.o2m-bad { color: var(--lb-danger, #cf222e); }
+.o2m-warn { color: var(--lb-warning, #9a6700); }
+.o2m-msg { font-size: .9rem; }
+.o2m-small-text { font-size: .8rem; word-break: break-all; }
+.o2m code { font-family: var(--lb-font-mono, ui-monospace, monospace); font-size: .82em; padding: 1px 6px; border-radius: 5px;
+  background: color-mix(in srgb, var(--lb-text, #000) 6%, transparent); word-break: break-word; }
+
+/* Kennzahl-Kacheln */
+.o2m-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 10px; }
+.o2m-tile { border: 1px solid var(--lb-border-color, #e5e5e5); border-radius: var(--lb-radius, 9px); padding: 10px 13px; min-width: 0;
+  background: color-mix(in srgb, var(--lb-text, #000) 2%, var(--lb-card-bg, #fff)); }
+.o2m-tile .k { font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--lb-text-muted, #737373); }
+.o2m-tile .v { font-size: 1.1rem; font-weight: 600; margin-top: 3px; overflow-wrap: break-word; hyphens: auto; }
+.o2m-tile .v.long { font-size: .95rem; line-height: 1.35; }
+.o2m-tile .v small { font-weight: 400; font-size: .78rem; color: var(--lb-text-muted, #737373); white-space: nowrap; }
+
+/* Status-Callouts: lb-callout mit Farbe je Zustand */
+.o2m .lb-callout.o2m-state-ok { border-left-color: var(--lb-success, #1a7f37); }
+.o2m .lb-callout.o2m-state-bad { border-left-color: var(--lb-danger, #cf222e); }
+.o2m .lb-callout ul { margin: 4px 0 0; padding-left: 18px; }
+.o2m .lb-callout { margin: 0 0 14px; }
+
+/* Werkzeugleisten */
+.o2m-toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 0 0 12px; }
+.o2m-toolbar.o2m-toolbar-end { margin: 14px 0 0; }
+.o2m-toolbar .grow { flex: 1; }
+.o2m-toolbar > .lb-input { max-width: 340px; margin: 0; }
+.o2m-toolbar .lb-btn { margin: 0; }
+.o2m-toolbar-group { display: inline-flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.o2m-chk { display: inline-flex; gap: 6px; align-items: center; font-size: .9rem; cursor: pointer; }
+.o2m-chk select.lb-input { width: auto; margin: 0; }
+.o2m .badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: .74rem; font-weight: 600; vertical-align: 1px; white-space: nowrap; }
+.o2m .b-red { background: color-mix(in srgb, var(--lb-danger, #cf222e) 14%, transparent); color: var(--lb-danger, #cf222e); }
+.o2m .b-green { background: color-mix(in srgb, var(--lb-success, #1a7f37) 15%, transparent); color: var(--lb-success, #1a7f37); }
+.o2m .b-amber { background: color-mix(in srgb, var(--lb-warning, #ca8a04) 16%, transparent); color: var(--lb-warning, #9a6700); }
+.o2m .b-grey { background: color-mix(in srgb, var(--lb-text, #000) 8%, transparent); color: var(--lb-text-secondary, #404040); }
+
+/* Tabellen: lb-table in einem scrollbaren Rahmen mit festem Kopf */
+.o2m-tablewrap { overflow: auto; max-height: 70vh; border-radius: var(--lb-radius, 9px); }
+.o2m-table { margin: 0; }
+.o2m-table th, .o2m-table td { vertical-align: top; padding: 7px 10px; }
+.o2m-table thead th { position: sticky; top: 0; z-index: 1; white-space: nowrap; }
+.o2m-table tr.grp td { background: color-mix(in srgb, var(--lb-primary, #6dac20) 10%, var(--lb-card-bg, #fff)); font-weight: 700;
+  font-size: .8rem; letter-spacing: .03em; color: var(--lb-text-secondary, #404040); }
+.o2m-table td.num { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.o2m-table .sm { font-size: .78rem; }
+.o2m-table .lb-input { min-width: 120px; margin: 0; }
+.o2m-narrow { width: 1%; }
+.o2m .copy { border: 1px solid var(--lb-border-color, #ddd); background: transparent; color: var(--lb-text-secondary, #404040); border-radius: 6px;
+  font-size: .72rem; padding: 1px 7px; margin-left: 6px; cursor: pointer; vertical-align: 1px; }
+.o2m .copy:hover { border-color: var(--lb-primary, #6dac20); color: var(--lb-primary, #6dac20); }
+.o2m .copy.done { border-color: var(--lb-success, #1a7f37); color: var(--lb-success, #1a7f37); }
+
+/* Formular: Zeilen aus dem Design System, nur Feldbreiten */
+.o2m-form .lb-form-row { border-top: 1px solid var(--lb-border-color, #eee); margin-bottom: 0; padding: 12px 0; }
+.o2m-form .lb-card .lb-form-row:first-of-type { border-top: 0; padding-top: 2px; }
+.o2m .lb-form-field > .lb-input { max-width: 440px; margin: 0; }
+.o2m .lb-input.o2m-small { width: 130px; max-width: 150px; }
+.o2m .lb-input.o2m-medium { max-width: 320px; }
+.o2m .o2m-line { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.o2m .o2m-line > .lb-input { flex: none; margin: 0; }
+.o2m .o2m-pass { display: flex; gap: 6px; align-items: center; }
+.o2m .o2m-pass > .lb-input { margin: 0; }
+.o2m .lb-form-help { margin-top: 0; }
+.o2m-savebar { position: sticky; bottom: 0; z-index: 5; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  padding: 12px 20px; margin: 0 0 16px; border-radius: var(--lb-radius, 10px); background: var(--lb-card-bg, #fff);
+  border: var(--lb-card-border, 1px solid #e5e5e5); box-shadow: 0 -4px 18px rgba(0, 0, 0, .06); }
+.o2m-savebar .o2m-msg { flex: 1; }
+.o2m-savebar .lb-btn { margin: 0; }
+
+/* Log */
+.o2m pre.o2m-log { background: #0d1117; color: #c9d1d9; padding: 12px 14px; border-radius: 9px; max-height: 68vh; overflow: auto;
+  font-size: .78rem; line-height: 1.5; white-space: pre-wrap; word-break: break-word; margin: 0; }
+.o2m pre.o2m-log .e { color: #ff7b72; } .o2m pre.o2m-log .w { color: #e3b341; } .o2m pre.o2m-log .s { color: #79c0ff; }
+.o2m pre.o2m-log .o { color: #56d364; } .o2m pre.o2m-log .d { color: #8b949e; }
+
+@media (max-width: 875px) {
+  .o2m-form .lb-form-row { padding: 10px 0; }
+  .o2m-table th, .o2m-table td { padding: 6px 8px; }
+}
+#lx-gw .lb-callout { margin: 14px 0 0; }

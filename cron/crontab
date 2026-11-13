@@ -1,0 +1,6 @@
+MAILTO=""
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# Watchdog: startet den Daemon neu, falls er nicht läuft
+*/5 * * * * loxberry REPLACELBPBINDIR/ctl.sh watchdog > /dev/null 2>&1

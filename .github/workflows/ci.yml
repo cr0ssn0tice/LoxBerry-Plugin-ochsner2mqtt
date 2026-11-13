@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Prüfungen und Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Werkzeuge (Mosquitto, paho-mqtt)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq mosquitto zip
+          pip install -q paho-mqtt pyflakes pillow
+      - name: Lint (Python, PHP, Bash)
+        run: |
+          python -m pyflakes bin/ochsner2mqtt.py bin/ots/*.py tests
+          for f in webfrontend/htmlauth/*.php tests/lbsim/*.php tests/phpstub/*.php; do php -l "$f"; done
+          for f in *.sh uninstall/*.sh daemon/*.sh bin/ctl.sh tests/*.sh tools/*.sh; do bash -n "$f"; done
+      - name: Tests (Dienst/MQTT, App-API, Gateway V2, LoxBerry-Anforderungen)
+        run: tests/run_all.sh
+      - name: Installations-ZIP bauen
+        run: tools/build-release.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LoxBerry-Plugin-ochsner2mqtt
+          path: dist/*.zip

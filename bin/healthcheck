@@ -1,0 +1,109 @@
+#!/usr/bin/python3 -I
+"""LoxBerry healthcheck for the Ochsner OTS plugin (ochsner2mqtt).
+
+Called by LoxBerry with "title" or "check" and answers in JSON (desc, status,
+result, logfile). Texts are English as required by LoxBerry. The check only
+reads the daemon's state file - it never repairs anything (the cron watchdog
+restarts a stopped daemon). Runtime well below one second.
+
+Status codes: 3 ERROR, 4 WARNING, 5 OK, 6 INFO
+"""
+
+import json
+import os
+import sys
+from datetime import datetime
+
+DESC = "Ochsner OTS: connection to the heat pump and plugin service"
+
+here = os.path.dirname(os.path.realpath(__file__))
+folder = os.path.basename(here)
+lbhome = here.split("/bin/plugins/")[0] if "/bin/plugins/" in here else os.environ.get("LBHOMEDIR", os.path.expanduser("~loxberry"))
+data_dir = os.path.join(lbhome, "data/plugins", folder)
+log_dir = os.path.join(lbhome, "log/plugins", folder)
+hc_log = os.path.join(log_dir, "healthcheck.log")
+
+
+def answer(status, result, details):
+    out = {"desc": DESC, "status": status, "result": result.replace("\n", " ")[:300]}
+    try:
+        os.makedirs(log_dir, exist_ok=True)
+        try:
+            os.unlink(hc_log)            # overwrite on every run (RAM disk)
+        except OSError:
+            pass
+        with open(hc_log, "w", encoding="utf-8") as fh:
+            fh.write("Ochsner OTS healthcheck %s\n" % datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            fh.write("Result: %s (status %s)\n\n" % (out["result"], status))
+            for k, v in details:
+                fh.write("%-22s %s\n" % (k + ":", v))
+        out["logfile"] = hc_log
+    except OSError:
+        pass
+    print(json.dumps(out))
+    sys.exit(0)
+
+
+def daemon_pid():
+    try:
+        pid = int(open("/dev/shm/%s.pid" % folder).read().strip())
+        with open("/proc/%d/cmdline" % pid, "rb") as fh:
+            return pid if b"ochsner2mqtt.py" in fh.read() else None
+    except (OSError, ValueError):
+        return None
+
+
+def newest_daemon_log():
+    try:
+        logs = [f for f in os.listdir(log_dir) if f.endswith("_Daemon.log")]
+        return os.path.join(log_dir, sorted(logs)[-1]) if logs else "-"
+    except OSError:
+        return "-"
+
+
+if len(sys.argv) > 1 and sys.argv[1] == "title":
+    print(json.dumps({"desc": DESC}))
+    sys.exit(0)
+
+details = [("Plugin folder", folder), ("Daemon log", newest_daemon_log())]
+pid = daemon_pid()
+details.append(("Daemon PID", pid or "not running"))
+if not pid:
+    answer(3, "The plugin service is not running. Restart it on the plugin page (Faults > Restart service) "
+              "and check the plugin log.", details)
+
+try:
+    with open(os.path.join(data_dir, "state.json"), encoding="utf-8") as fh:
+        s = json.load(fh)
+except (OSError, ValueError) as exc:
+    details.append(("state.json", exc))
+    answer(4, "The service is running but has not written any data yet.", details)
+
+st = s.get("status") or {}
+cfg = s.get("config") or {}
+alarms = s.get("alarms_active") or []
+details += [("Configured", "yes" if cfg.get("host") else "no"), ("Connected", st.get("connected")),
+            ("Last successful poll", st.get("last_ok") or "-"), ("Last error", st.get("error") or "-"),
+            ("Data points", len(s.get("points") or [])), ("MQTT enabled", cfg.get("mqtt_enabled")),
+            ("MQTT connected", s.get("mqtt_connected")), ("Active heat pump faults", len(alarms))]
+for a in alarms:
+    details.append(("  Fault", "%s %s" % (a.get("name", "?"), ("- " + a["text"]) if a.get("text") else "")))
+
+if not cfg.get("host"):
+    answer(6, "Not configured yet: enter the IP address of the heat pump controller on the plugin page.", details)
+if not st.get("connected"):
+    answer(3, "No connection to the heat pump controller: %s" % (st.get("error") or "unknown error"), details)
+
+age = None
+try:
+    age = (datetime.now().astimezone() - datetime.fromisoformat(st.get("last_ok"))).total_seconds()
+except (TypeError, ValueError):
+    pass
+if age is not None and age > 900:
+    answer(4, "Connected, but the last successful poll was %d minutes ago." % (age // 60), details)
+if alarms:
+    answer(4, "The heat pump reports %d active fault(s): %s" % (len(alarms), ", ".join(a.get("name", "?") for a in alarms)),
+           details)
+if cfg.get("mqtt_enabled") and not s.get("mqtt_connected"):
+    answer(4, "Heat pump connected, but the plugin is not connected to the MQTT broker.", details)
+answer(5, "Connected, %d data points, no active fault." % len(s.get("points") or []), details)
