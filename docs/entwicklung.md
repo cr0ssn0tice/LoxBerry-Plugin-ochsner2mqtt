@@ -128,8 +128,9 @@ Das Banner entsteht aus `tests/docs/banner.html`.
 
 1. Version in `plugin.cfg` (`VERSION`) und `bin/ochsner2mqtt.py` (`VERSION`) erhöhen, `CHANGELOG.md` ergänzen.
 2. Tests laufen lassen, mergen.
-3. Tag setzen: `git tag v0.4.1 && git push origin v0.4.1`. Der Workflow **Release** baut
-   `LoxBerry-Plugin-ochsner2mqtt-0.4.1.zip` und legt das GitHub-Release mit den Notizen aus dem CHANGELOG an.
+3. Tag setzen – entweder `git tag v0.4.1 && git push origin v0.4.1` oder auf GitHub unter
+   *Releases → Draft a new release* mit neuem Tag `v0.4.1` veröffentlichen. Der Workflow **Release** baut
+   `LoxBerry-Plugin-ochsner2mqtt-0.4.1.zip`, hängt es an das Release und setzt Titel und Notizen aus dem CHANGELOG.
 4. Danach `release.cfg` (bzw. für Vorabversionen wie `0.5.0-beta.1` die `prerelease.cfg`) auf `main` anpassen:
    `VERSION` und `ARCHIVEURL`. Erst dann melden die LoxBerrys das Update.
 

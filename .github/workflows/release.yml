@@ -1,13 +1,21 @@
 name: Release
 
-# Ein Tag vX.Y.Z (gleich VERSION in plugin.cfg) baut das Installations-ZIP und legt das GitHub-Release an.
-# Danach release.cfg auf main anpassen (VERSION, ARCHIVEURL) – erst dann melden LoxBerrys das Update.
+# Baut das Installations-ZIP und hängt es mit den Notizen aus CHANGELOG.md an das GitHub-Release.
+# Auslöser: ein Tag vX.Y.Z (gleich VERSION in plugin.cfg) – per git push oder über
+# "Releases → Draft a new release" in der GitHub-Oberfläche. Läuft mehrfach ohne Schaden.
+# Danach release.cfg auf main anpassen (VERSION, ARCHIVEURL) – erst dann melden die LoxBerrys das Update.
 on:
   push:
     tags: ["v*"]
+  release:
+    types: [published]
 
 permissions:
   contents: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -24,10 +32,15 @@ jobs:
       - name: Release-Notizen aus CHANGELOG.md
         run: |
           awk -v v="$VERSION" '$0 ~ "^## \\[" v "\\]" {f=1; next} /^## \[/ {f=0} f' CHANGELOG.md > notes.md
-          printf '\n---\nInstallation: ZIP herunterladen und in der LoxBerry-Plugin-Verwaltung installieren. Anleitung: [docs/installation.md](https://github.com/%s/blob/main/docs/installation.md)\n' "$GITHUB_REPOSITORY" >> notes.md
-      - name: Release anlegen
+          printf '\n---\nInstallation: **LoxBerry-Plugin-ochsner2mqtt-%s.zip** herunterladen und in der LoxBerry-Plugin-Verwaltung installieren. Anleitung: [docs/installation.md](https://github.com/%s/blob/main/docs/installation.md)\n' "$VERSION" "$GITHUB_REPOSITORY" >> notes.md
+      - name: Release anlegen oder ergänzen
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           PRE=""; case "$VERSION" in *-*) PRE="--prerelease";; esac
-          gh release create "$GITHUB_REF_NAME" dist/*.zip --title "Ochsner OTS $VERSION" --notes-file notes.md $PRE
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" dist/*.zip --clobber
+            gh release edit "$GITHUB_REF_NAME" --title "Ochsner OTS $VERSION" --notes-file notes.md $PRE
+          else
+            gh release create "$GITHUB_REF_NAME" dist/*.zip --title "Ochsner OTS $VERSION" --notes-file notes.md $PRE
+          fi
