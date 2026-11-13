@@ -1,0 +1,6 @@
+# JS-Module nach Plugin-Updates immer neu prüfen lassen
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>

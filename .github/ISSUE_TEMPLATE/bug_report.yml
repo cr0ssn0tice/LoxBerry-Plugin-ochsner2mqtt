@@ -1,0 +1,51 @@
+name: Fehler melden
+description: Etwas funktioniert nicht wie beschrieben
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke fürs Melden! Am schnellsten geht es mit dem **Diagnose-Export** (Konfiguration → Diagnose).
+        Er enthält weder Passwort noch PIN, Benutzer oder Seriennummer, und die IP-Adresse ist gekürzt.
+        Bitte trotzdem keine Zugangsdaten in das Issue schreiben.
+  - type: input
+    id: version
+    attributes:
+      label: Plugin-Version
+      placeholder: z. B. 0.4.0
+    validations:
+      required: true
+  - type: input
+    id: loxberry
+    attributes:
+      label: LoxBerry-Version und MQTT Gateway (V1/V2)
+      placeholder: z. B. 4.0.1.6, Gateway V2
+    validations:
+      required: true
+  - type: input
+    id: anlage
+    attributes:
+      label: Wärmepumpe und Reglersoftware
+      description: Steht im Reiter „Störungen“ unter Anlage und Reglersoftware.
+      placeholder: z. B. Air Hawk 208, v3.3.20
+  - type: textarea
+    id: was
+    attributes:
+      label: Was passiert – und was hättest du erwartet?
+    validations:
+      required: true
+  - type: textarea
+    id: schritte
+    attributes:
+      label: Schritte zum Nachstellen
+  - type: textarea
+    id: log
+    attributes:
+      label: Auszug aus dem Log
+      description: Reiter „Log“, Protokollstufe vorher auf Info oder Debug stellen.
+      render: text
+  - type: textarea
+    id: diag
+    attributes:
+      label: Diagnose-Export
+      description: Datei per Drag & Drop anhängen.

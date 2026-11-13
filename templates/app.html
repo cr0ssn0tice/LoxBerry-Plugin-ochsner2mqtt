@@ -1,0 +1,13 @@
+<!-- ochsner2mqtt – Wärmepumpen-Dashboard (Stil: css/o2m-app.css, Texte: language_<sprache>.ini) -->
+
+<div id="o2m-app" data-lang="<TMPL_VAR O2M_LANG>">
+  <div class="o2m-top">
+    <div data-o2m="status" class="o2m-top" style="margin:0"><span class="o2m-chip"><TMPL_VAR COMMON.LOADING></span></div>
+    <span class="grow"></span>
+    <button type="button" class="o2m-icon" data-o2m="dark" title="<TMPL_VAR APP.DARK_TITLE>" aria-label="<TMPL_VAR APP.DARK_TITLE>">◐<span class="lbl"> <TMPL_VAR APP.DARK></span></button>
+  </div>
+  <div data-o2m="card"></div>
+  <dialog class="o2m-more"></dialog>
+  <noscript><TMPL_VAR APP.NOSCRIPT></noscript>
+</div>
+<script type="module" src="app/host.js?v=<TMPL_VAR O2M_VERSION>"></script>

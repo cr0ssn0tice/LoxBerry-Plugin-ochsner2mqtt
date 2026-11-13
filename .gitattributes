@@ -1,0 +1,5 @@
+# LoxBerry verlangt Unix-Zeilenenden (LF) für alle Skripte, Templates und Sprachdateien
+* text=auto eol=lf
+*.png binary
+*.gif binary
+*.zip binary

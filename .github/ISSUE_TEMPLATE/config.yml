@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Sicherheitslücke melden
+    url: https://github.com/cr0ssn0tice/LoxBerry-Plugin-ochsner2mqtt/blob/main/SECURITY.md
+    about: Bitte nicht öffentlich als Issue – so meldest du vertraulich.
+  - name: Dokumentation
+    url: https://github.com/cr0ssn0tice/LoxBerry-Plugin-ochsner2mqtt/tree/main/docs
+    about: Installation, Loxone, MQTT-Referenz und Fehlersuche

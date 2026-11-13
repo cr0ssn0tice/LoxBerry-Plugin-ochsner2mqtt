@@ -1,0 +1,271 @@
+<!-- ochsner2mqtt – Plugin-Seiten (LoxBerry Design System, ohne jQuery Mobile).
+     Texte: templates/lang/language_<sprache>.ini (Platzhalter im LoxBerry-Template-Format), gerendert mit LBTemplate.
+     Stil: webfrontend/htmlauth/css/o2m.css, Logik: webfrontend/htmlauth/js/o2m.js (beide über $htmlhead). -->
+<div class="lb-content o2m" id="o2m" data-form="<TMPL_VAR O2M_FORM>" data-package="<TMPL_VAR O2M_PACKAGE>">
+
+<!-- ===================================================== STÖRUNGEN -->
+<section data-section="overview" hidden>
+  <div class="lb-card o2m-card">
+    <div class="o2m-head"><div><h2><TMPL_VAR OV.TITLE></h2><p><TMPL_VAR OV.INTRO></p></div>
+      <div class="side"><span class="o2m-msg" id="ov-msg" role="status"></span></div></div>
+    <div id="ov-alarm"></div>
+    <div class="o2m-tiles" id="ov-tiles"></div>
+    <div class="o2m-toolbar o2m-toolbar-end">
+      <button type="button" class="lb-btn lb-btn-primary lb-btn-icon" data-act="poll"><i class="pi pi-refresh"></i> <TMPL_VAR OV.BTN_POLL></button>
+      <button type="button" class="lb-btn lb-btn-icon" data-act="rescan"><i class="pi pi-search"></i> <TMPL_VAR OV.BTN_RESCAN></button>
+      <button type="button" class="lb-btn lb-btn-icon" id="ov-ack" data-act="ack" hidden><i class="pi pi-check-circle"></i> <TMPL_VAR OV.BTN_ACK></button>
+      <button type="button" class="lb-btn lb-btn-icon" data-act="restart"><i class="pi pi-power-off"></i> <TMPL_VAR OV.BTN_RESTART></button>
+    </div>
+  </div>
+  <div id="ov-notify"></div>
+  <div class="lb-card o2m-card">
+    <div class="o2m-head"><div><h2><TMPL_VAR OV.HISTORY_TITLE></h2><p><TMPL_VAR OV.HISTORY_INTRO></p></div>
+      <div class="side"><button type="button" class="lb-btn lb-btn-sm lb-btn-icon" data-act="clear_history"><i class="pi pi-trash"></i> <TMPL_VAR OV.BTN_CLEAR_HISTORY></button></div></div>
+    <div class="o2m-tablewrap"><table class="lb-table o2m-table"><thead><tr><th><TMPL_VAR COMMON.TIME></th><th><TMPL_VAR OV.COL_EVENT></th><th><TMPL_VAR OV.COL_FAULT></th><th><TMPL_VAR OV.COL_RAW></th></tr></thead>
+      <tbody id="ov-history"><tr><td colspan="4" class="o2m-muted"><TMPL_VAR COMMON.LOADING></td></tr></tbody></table></div>
+  </div>
+</section>
+
+<!-- ===================================================== ALLE WERTE -->
+<section data-section="values" hidden>
+  <div class="lb-card o2m-card">
+    <div class="o2m-head"><div><h2><TMPL_VAR VAL.TITLE></h2><p><TMPL_VAR VAL.INTRO></p></div></div>
+    <div class="o2m-toolbar">
+      <input class="lb-input" id="val-filter" type="search" placeholder="<TMPL_VAR VAL.SEARCH>" aria-label="<TMPL_VAR VAL.SEARCH>">
+      <label class="o2m-chk"><input type="checkbox" id="val-alarms"> <TMPL_VAR VAL.ONLY_ALARMS></label>
+      <span class="grow"></span><span id="val-meta" class="o2m-msg o2m-muted"></span>
+    </div>
+    <div class="o2m-tablewrap"><table class="lb-table o2m-table"><thead><tr><th><TMPL_VAR COMMON.NAME></th><th><TMPL_VAR COMMON.VALUE></th><th><TMPL_VAR VAL.COL_TOPIC></th><th>OA</th></tr></thead>
+      <tbody id="val-body"><tr><td colspan="4" class="o2m-muted"><TMPL_VAR COMMON.LOADING></td></tr></tbody></table></div>
+  </div>
+</section>
+
+<!-- ===================================================== EXPERTEN-EDITOR -->
+<section data-section="edit" hidden>
+  <div class="lb-card o2m-card">
+    <div class="o2m-head"><div><h2><TMPL_VAR ED.TITLE></h2><p><TMPL_VAR ED.INTRO></p></div></div>
+    <div id="ed-locked" class="lb-callout lb-callout-warning" hidden>
+      <span class="lb-callout-title"><TMPL_VAR ED.LOCKED_TITLE></span><TMPL_VAR ED.LOCKED_TEXT></div>
+    <div id="ed-info" class="lb-callout" hidden>
+      <span class="lb-callout-title"><TMPL_VAR ED.FLASH_TITLE></span><span id="ed-flash"></span></div>
+    <div class="o2m-toolbar">
+      <input class="lb-input" id="ed-filter" type="search" placeholder="<TMPL_VAR COMMON.SEARCH>" aria-label="<TMPL_VAR COMMON.SEARCH>">
+      <span class="grow"></span><span id="ed-msg" class="o2m-msg" role="status"></span>
+    </div>
+    <div class="o2m-tablewrap"><table class="lb-table o2m-table"><thead><tr><th><TMPL_VAR ED.COL_PARAM></th><th><TMPL_VAR ED.COL_CURRENT></th><th><TMPL_VAR ED.COL_RANGE></th><th><TMPL_VAR ED.COL_NEW></th><th></th></tr></thead>
+      <tbody id="ed-body"><tr><td colspan="5" class="o2m-muted"><TMPL_VAR COMMON.LOADING></td></tr></tbody></table></div>
+  </div>
+  <div class="lb-card o2m-card">
+    <div class="o2m-head"><div><h2><TMPL_VAR ED.LOG_TITLE></h2><p><TMPL_VAR ED.LOG_INTRO></p></div></div>
+    <div class="o2m-tablewrap"><table class="lb-table o2m-table"><thead><tr><th><TMPL_VAR COMMON.TIME></th><th><TMPL_VAR ED.COL_SOURCE></th><th><TMPL_VAR ED.COL_POINT></th><th><TMPL_VAR COMMON.VALUE></th><th><TMPL_VAR ED.COL_RESULT></th></tr></thead>
+      <tbody id="ed-log"></tbody></table></div>
+  </div>
+</section>
+
+<!-- ===================================================== LOXONE -->
+<section data-section="loxone" hidden>
+  <div class="lb-card o2m-card">
+    <div class="o2m-head"><div><h2><TMPL_VAR LX.TITLE></h2><p><TMPL_VAR LX.INTRO></p></div></div>
+    <div class="o2m-tiles" id="lx-tiles"></div>
+    <div id="lx-gw"></div>
+  </div>
+
+  <div class="lb-card o2m-card">
+    <div class="o2m-head"><div><h2><TMPL_VAR LX.VI_TITLE> <span class="o2m-muted o2m-normal">(<TMPL_VAR LX.VI_SUB>)</span></h2>
+      <p><TMPL_VAR LX.VI_INTRO></p></div></div>
+    <div class="o2m-toolbar">
+      <input class="lb-input" id="lx-filter" type="search" placeholder="<TMPL_VAR COMMON.SEARCH>" aria-label="<TMPL_VAR COMMON.SEARCH>">
+      <span id="lx-selbar" class="o2m-toolbar-group" hidden>
+        <button type="button" class="lb-btn lb-btn-sm" data-sel="basis"><TMPL_VAR LX.SEL_BASIS></button>
+        <button type="button" class="lb-btn lb-btn-sm" data-sel="all"><TMPL_VAR LX.SEL_ALL></button>
+        <button type="button" class="lb-btn lb-btn-sm" data-sel="none"><TMPL_VAR LX.SEL_NONE></button>
+        <label class="o2m-chk" id="lx-ms-wrap" hidden><TMPL_VAR LX.MS_TARGET>
+          <select class="lb-input lb-select" id="lx-ms"></select></label>
+        <button type="button" class="lb-btn lb-btn-primary lb-btn-sm lb-btn-icon" data-act="lx_apply"><i class="pi pi-send"></i> <TMPL_VAR LX.APPLY></button>
+      </span>
+      <span class="grow"></span><span class="o2m-msg o2m-muted" id="lx-meta" role="status"></span>
+    </div>
+    <div class="o2m-tablewrap"><table class="lb-table o2m-table"><thead><tr><th id="lx-selhead" class="o2m-narrow" hidden title="<TMPL_VAR LX.COL_MS_TITLE>">MS</th><th><TMPL_VAR LX.COL_AREA></th><th><TMPL_VAR COMMON.VALUE></th><th><TMPL_VAR LX.COL_CURRENT></th><th><TMPL_VAR LX.COL_VI></th></tr></thead>
+      <tbody id="lx-body"><tr><td colspan="5" class="o2m-muted"><TMPL_VAR COMMON.LOADING></td></tr></tbody></table></div>
+  </div>
+
+  <div class="lb-card o2m-card">
+    <div class="o2m-head"><div><h2><TMPL_VAR LX.CMD_TITLE> <span class="o2m-muted o2m-normal">(<TMPL_VAR LX.CMD_SUB>)</span></h2>
+      <p><TMPL_VAR LX.CMD_INTRO_1> <code id="lx-addr">/dev/udp/&lt;loxberry&gt;/11884</code>. <TMPL_VAR LX.CMD_INTRO_2>
+        <code id="lx-res">ochsner/cmd_result</code>.</p></div></div>
+    <div class="o2m-tablewrap"><table class="lb-table o2m-table"><thead><tr><th><TMPL_VAR LX.COL_ACTION></th><th><TMPL_VAR LX.COL_VALUES></th><th><TMPL_VAR LX.COL_COMMAND></th></tr></thead>
+      <tbody id="lx-cmds"><tr><td colspan="3" class="o2m-muted"><TMPL_VAR COMMON.LOADING></td></tr></tbody></table></div>
+  </div>
+</section>
+
+<!-- ===================================================== KONFIGURATION -->
+<section data-section="settings" hidden>
+  <form id="cfg-form" class="o2m-form" autocomplete="off" novalidate>
+    <div class="lb-card o2m-card">
+      <div class="o2m-head"><div><h2><TMPL_VAR CFG.HP_TITLE></h2><p><TMPL_VAR CFG.HP_INTRO></p></div>
+        <div class="side" id="cfg-conn"></div></div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="host"><TMPL_VAR CFG.HOST></label></div>
+        <div class="lb-form-field"><input class="lb-input" id="host" name="host" placeholder="<TMPL_VAR CFG.HOST_PLACEHOLDER>" spellcheck="false"
+          data-validation-rule="special:domainname_or_ipaddr" data-validation-error-msg="<TMPL_VAR CFG.ERR_HOST>"></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="port"><TMPL_VAR CFG.PORT></label></div>
+        <div class="lb-form-field"><input class="lb-input o2m-small" id="port" name="port" inputmode="numeric"
+          data-validation-rule="^(([1-9]{1}|[1-9][0-9]{1,3})|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$" data-validation-error-msg="<TMPL_VAR CFG.ERR_PORT>"></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="username"><TMPL_VAR CFG.USER></label></div>
+        <div class="lb-form-field"><input class="lb-input" id="username" name="username" autocomplete="off" spellcheck="false"></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="password"><TMPL_VAR CFG.PASSWORD></label></div>
+        <div class="lb-form-field o2m-pass"><input class="lb-input" id="password" name="password" type="password" autocomplete="new-password">
+          <button type="button" class="lb-btn lb-btn-sm lb-btn-icon" data-showpass="password" title="<TMPL_VAR CFG.SHOW>" aria-label="<TMPL_VAR CFG.SHOW>"><i class="pi pi-eye"></i></button></div>
+        <div class="lb-form-help" id="pw-hint"></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="pin"><TMPL_VAR CFG.PIN></label></div>
+        <div class="lb-form-field o2m-pass"><input class="lb-input o2m-small" id="pin" name="pin" type="password" inputmode="numeric" autocomplete="off"
+          data-validation-rule="^([0-9]{1,12}|)$" data-validation-error-msg="<TMPL_VAR CFG.ERR_PIN>">
+          <button type="button" class="lb-btn lb-btn-sm lb-btn-icon" data-showpass="pin" title="<TMPL_VAR CFG.SHOW>" aria-label="<TMPL_VAR CFG.SHOW>"><i class="pi pi-eye"></i></button></div>
+        <div class="lb-form-help" id="pin-hint"></div>
+      </div>
+    </div>
+
+    <div class="lb-card o2m-card">
+      <div class="o2m-head"><div><h2><TMPL_VAR CFG.POLL_TITLE></h2><p><TMPL_VAR CFG.POLL_INTRO></p></div></div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="poll_interval"><TMPL_VAR CFG.POLL_INTERVAL></label></div>
+        <div class="lb-form-field o2m-line"><input class="lb-input o2m-small" id="poll_interval" type="number" min="10" max="3600"><span class="o2m-muted"><TMPL_VAR COMMON.SECONDS></span></div>
+        <div class="lb-form-help"><TMPL_VAR CFG.POLL_INTERVAL_HELP></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="mqtt_enabled"><TMPL_VAR CFG.MQTT></label></div>
+        <div class="lb-form-field"><label class="lb-toggle"><input type="checkbox" id="mqtt_enabled"><span class="lb-toggle-slider"></span></label></div>
+        <div class="lb-form-help"><TMPL_VAR CFG.MQTT_HELP></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="mqtt_topic"><TMPL_VAR CFG.TOPIC></label></div>
+        <div class="lb-form-field"><input class="lb-input o2m-medium" id="mqtt_topic" spellcheck="false"
+          data-validation-rule="^[A-Za-z0-9_\-]+(/[A-Za-z0-9_\-]+)*$" data-validation-error-msg="<TMPL_VAR CFG.ERR_TOPIC>"></div>
+        <div class="lb-form-help"><TMPL_VAR CFG.TOPIC_HELP></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="publish_mode"><TMPL_VAR CFG.PUBLISH></label></div>
+        <div class="lb-form-field"><select class="lb-input lb-select" id="publish_mode">
+          <option value="changes"><TMPL_VAR CFG.PUBLISH_CHANGES></option>
+          <option value="all"><TMPL_VAR CFG.PUBLISH_ALL></option></select></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="full_refresh_min"><TMPL_VAR CFG.FULL_REFRESH></label></div>
+        <div class="lb-form-field o2m-line"><input class="lb-input o2m-small" id="full_refresh_min" type="number" min="1" max="1440"><span class="o2m-muted"><TMPL_VAR COMMON.MINUTES></span></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="include_technical"><TMPL_VAR CFG.TECHNICAL></label></div>
+        <div class="lb-form-field"><label class="lb-toggle"><input type="checkbox" id="include_technical"><span class="lb-toggle-slider"></span></label></div>
+        <div class="lb-form-help"><TMPL_VAR CFG.TECHNICAL_HELP></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="publish_raw_points"><TMPL_VAR CFG.RAW></label></div>
+        <div class="lb-form-field"><label class="lb-toggle"><input type="checkbox" id="publish_raw_points"><span class="lb-toggle-slider"></span></label></div>
+        <div class="lb-form-help"><TMPL_VAR CFG.RAW_HELP></div>
+      </div>
+    </div>
+
+    <div class="lb-card o2m-card">
+      <div class="o2m-head"><div><h2><TMPL_VAR CFG.SCHEMA_TITLE></h2><p><TMPL_VAR CFG.SCHEMA_INTRO></p></div></div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="schema_buffer"><TMPL_VAR CFG.BUFFER></label></div>
+        <div class="lb-form-field"><select class="lb-input lb-select o2m-medium" id="schema_buffer">
+          <option value="auto"><TMPL_VAR CFG.BUFFER_AUTO></option>
+          <option value="show"><TMPL_VAR CFG.BUFFER_SHOW></option>
+          <option value="hide"><TMPL_VAR CFG.BUFFER_HIDE></option></select></div>
+        <div class="lb-form-help"><TMPL_VAR CFG.BUFFER_HELP> <span id="buf-detect"></span></div>
+      </div>
+    </div>
+
+    <div class="lb-card o2m-card">
+      <div class="o2m-head"><div><h2><TMPL_VAR CFG.NOTIFY_TITLE></h2><p><TMPL_VAR CFG.NOTIFY_INTRO></p></div></div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="notify_alarms"><TMPL_VAR CFG.NOTIFY_ALARMS></label></div>
+        <div class="lb-form-field"><label class="lb-toggle"><input type="checkbox" id="notify_alarms"><span class="lb-toggle-slider"></span></label></div>
+        <div class="lb-form-help"><TMPL_VAR CFG.NOTIFY_ALARMS_HELP></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="notify_connection"><TMPL_VAR CFG.NOTIFY_CONN></label></div>
+        <div class="lb-form-field"><label class="lb-toggle"><input type="checkbox" id="notify_connection"><span class="lb-toggle-slider"></span></label></div>
+        <div class="lb-form-help"><TMPL_VAR CFG.NOTIFY_CONN_HELP></div>
+      </div>
+    </div>
+
+    <div class="lb-card o2m-card">
+      <div class="o2m-head"><div><h2><TMPL_VAR CFG.WRITE_TITLE></h2><p><TMPL_VAR CFG.WRITE_INTRO></p></div></div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="writes_enabled"><TMPL_VAR CFG.WRITES></label></div>
+        <div class="lb-form-field"><label class="lb-toggle"><input type="checkbox" id="writes_enabled"><span class="lb-toggle-slider"></span></label></div>
+        <div class="lb-form-help"><TMPL_VAR CFG.WRITES_HELP></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="write_max_per_day"><TMPL_VAR CFG.MAX_PER_DAY></label></div>
+        <div class="lb-form-field o2m-line"><input class="lb-input o2m-small" id="write_max_per_day" type="number" min="0" max="1000"><span class="o2m-muted"><TMPL_VAR CFG.WRITES_UNIT></span></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><label for="write_min_interval_sec"><TMPL_VAR CFG.MIN_INTERVAL></label></div>
+        <div class="lb-form-field o2m-line"><input class="lb-input o2m-small" id="write_min_interval_sec" type="number" min="10"><span class="o2m-muted"><TMPL_VAR COMMON.SECONDS></span></div>
+        <div class="lb-form-help"><TMPL_VAR CFG.MIN_INTERVAL_HELP></div>
+      </div>
+    </div>
+
+    <div class="lb-card o2m-card">
+      <div class="o2m-head"><div><h2><TMPL_VAR CFG.DIAG_TITLE></h2><p><TMPL_VAR CFG.DIAG_INTRO></p></div></div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><span><TMPL_VAR CFG.DIAG_EXPORT></span></div>
+        <div class="lb-form-field"><a class="lb-btn lb-btn-icon" href="ajax.php?action=diag" download><i class="pi pi-download"></i> <TMPL_VAR CFG.DIAG_DOWNLOAD></a></div>
+        <div class="lb-form-help"><TMPL_VAR CFG.DIAG_HELP></div>
+      </div>
+      <div class="lb-form-row">
+        <div class="lb-form-label"><span><TMPL_VAR LOG.LEVEL></span></div>
+        <div class="lb-form-field"><a class="lb-btn lb-btn-icon" href="index.php?form=log"><i class="pi pi-list"></i> <TMPL_VAR CFG.DIAG_TO_LOG></a></div>
+      </div>
+    </div>
+
+    <div class="o2m-savebar">
+      <button class="lb-btn lb-btn-primary lb-btn-icon" type="submit"><i class="pi pi-save"></i> <TMPL_VAR COMMON.SAVE></button>
+      <span id="cfg-msg" class="o2m-msg o2m-muted" role="status"><TMPL_VAR CFG.SAVE_HINT></span>
+    </div>
+  </form>
+</section>
+
+<!-- ===================================================== LOG -->
+<section data-section="log" hidden>
+  <div class="lb-card o2m-card">
+    <div class="o2m-head"><div><h2><TMPL_VAR LOG.TITLE></h2><p><TMPL_VAR LOG.INTRO></p></div></div>
+    <div class="lb-form-row">
+      <div class="lb-form-label"><label for="o2m-loglevel"><TMPL_VAR LOG.LEVEL></label></div>
+      <div class="lb-form-field o2m-line"><select class="lb-input lb-select o2m-medium" id="o2m-loglevel" data-md5="<TMPL_VAR O2M_PLUGINMD5>" data-level="<TMPL_VAR O2M_LOGLEVEL>">
+        <option value="0"><TMPL_VAR LOG.LEVEL_0></option>
+        <option value="3"><TMPL_VAR LOG.LEVEL_3></option>
+        <option value="4"><TMPL_VAR LOG.LEVEL_4></option>
+        <option value="6"><TMPL_VAR LOG.LEVEL_6></option>
+        <option value="7"><TMPL_VAR LOG.LEVEL_7></option></select>
+        <span class="o2m-msg" id="log-level-msg" role="status"></span></div>
+      <div class="lb-form-help"><TMPL_VAR LOG.LEVEL_HELP></div>
+    </div>
+    <div class="lb-form-row">
+      <div class="lb-form-label"><span><TMPL_VAR LOG.FILES></span></div>
+      <div class="lb-form-field o2m-line">
+        <a class="lb-btn lb-btn-sm lb-btn-icon" id="log-viewer" href="#" target="_blank" rel="noopener" hidden><i class="pi pi-external-link"></i> <TMPL_VAR LOG.OPEN_VIEWER></a>
+        <a class="lb-btn lb-btn-sm lb-btn-icon" href="<TMPL_VAR O2M_LOGLIST_URL>" target="_blank" rel="noopener"><i class="pi pi-list"></i> <TMPL_VAR LOG.ALL_LOGS></a>
+        <a class="lb-btn lb-btn-sm lb-btn-icon" href="ajax.php?action=diag" download><i class="pi pi-download"></i> <TMPL_VAR LOG.DIAG></a>
+      </div>
+    </div>
+    <div class="o2m-toolbar">
+      <label class="o2m-chk"><input type="checkbox" id="log-auto"> <TMPL_VAR LOG.AUTO></label>
+      <button type="button" class="lb-btn lb-btn-sm lb-btn-icon" data-act="log_reload"><i class="pi pi-refresh"></i> <TMPL_VAR LOG.RELOAD></button>
+      <span class="grow"></span><span class="o2m-muted o2m-small-text" id="log-file"></span>
+    </div>
+    <pre class="o2m-log" id="log-body"><TMPL_VAR COMMON.LOADING></pre>
+  </div>
+</section>
+</div>
